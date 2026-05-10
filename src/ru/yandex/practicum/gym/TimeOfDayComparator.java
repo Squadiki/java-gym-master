@@ -2,7 +2,7 @@ package ru.yandex.practicum.gym;
 
 import java.util.Comparator;
 
-public class TimeOfDayComparator implements Comparator<TimeOfDay>{
+public class TimeOfDayComparator implements Comparator<TimeOfDay> {
 
     @Override
     public int compare(TimeOfDay time1, TimeOfDay time2) {
@@ -11,5 +11,5 @@ public class TimeOfDayComparator implements Comparator<TimeOfDay>{
         } else {
             return Integer.compare(time1.getMinutes(), time2.getMinutes());
         }
-    };
+    }
 }
