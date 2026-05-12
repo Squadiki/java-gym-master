@@ -4,20 +4,7 @@ import java.util.*;
 
 public class Timetable {
 
-    private HashMap<DayOfWeek, TreeMap<TimeOfDay, List<TrainingSession>>> timetable;
-
-    public Timetable() {
-        this.timetable = new HashMap<>();
-    }
-
-    // Компаратор времени тренировки
-    private final TimeOfDayComparator timeComparator = new TimeOfDayComparator();
-
-    // Компаратор счётчика тренировок для тренеров
-    private final CounterOfTrainingsComparator counterOfTrainingsComparator = new CounterOfTrainingsComparator();
-
-    // Обратный компаратор счётчика тренировок
-    Comparator<CounterOfTrainings> reversedCounterOfTrainingsComparator = counterOfTrainingsComparator.reversed();
+    private HashMap<DayOfWeek, TreeMap<TimeOfDay, List<TrainingSession>>> timetable = new HashMap<>();
 
     public void addNewTrainingSession(TrainingSession trainingSession) {
         DayOfWeek day = trainingSession.getDayOfWeek(); // День тренировки
@@ -32,7 +19,7 @@ public class Timetable {
                 trainingSessionTreeMap.put(time, trainingSessionList);
             }
         } else {
-            TreeMap<TimeOfDay, List<TrainingSession>> trainingSessionTreeMap = new TreeMap<>(timeComparator);
+            TreeMap<TimeOfDay, List<TrainingSession>> trainingSessionTreeMap = new TreeMap<>();
             List<TrainingSession> trainingSessionList = new ArrayList<>();
             trainingSessionList.add(trainingSession);
             trainingSessionTreeMap.put(time, trainingSessionList);
@@ -43,25 +30,23 @@ public class Timetable {
     public TreeMap<TimeOfDay, List<TrainingSession>> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
         if (timetable.containsKey(dayOfWeek)) {
             return timetable.get(dayOfWeek);
-        } else {
-            System.out.println("В этот день никаких занятий не запланировано.");
-            return null;
         }
+
+        System.out.println("В этот день никаких занятий не запланировано.");
+        return null;
     }
 
     public List<TrainingSession> getTrainingSessionsForDayAndTime(DayOfWeek dayOfWeek, TimeOfDay timeOfDay) {
-        if (timetable.containsKey(dayOfWeek)) {
-            TreeMap<TimeOfDay, List<TrainingSession>> trainingSessionTreeMap = timetable.get(dayOfWeek);
-            if (trainingSessionTreeMap.containsKey(timeOfDay)) {
-                return trainingSessionTreeMap.get(timeOfDay);
-            } else {
-                System.out.println("В это время никаких занятий не запланировано.");
-                return null;
-            }
-        } else {
+        if (!timetable.containsKey(dayOfWeek)) {
             System.out.println("В этот день никаких занятий не запланировано.");
             return null;
         }
+        TreeMap<TimeOfDay, List<TrainingSession>> trainingSessionTreeMap = timetable.get(dayOfWeek);
+        if (!trainingSessionTreeMap.containsKey(timeOfDay)) {
+            System.out.println("В это время никаких занятий не запланировано.");
+            return null;
+        }
+        return trainingSessionTreeMap.get(timeOfDay);
     }
 
     public List<CounterOfTrainings> getCountByCoaches() {
@@ -81,9 +66,6 @@ public class Timetable {
             }
         }
 
-        List<CounterOfTrainings> counterOfTrainingsList = new ArrayList<>(counterMap.values());
-        counterOfTrainingsList.sort(reversedCounterOfTrainingsComparator);
-
-        return counterOfTrainingsList;
+        return counterMap.values().stream().sorted(Collections.reverseOrder()).toList();
     }
 }
